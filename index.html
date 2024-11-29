@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="description"
+        content="DeSplat: Decomposed Gaussian Splatting for Distractor-Free Rendering">
+  <meta name="keywords" content="Gaussian Splatting, Distractor-Free Rendering, Computer Graphics">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>DeSplat: Decomposed Gaussian Splatting for Distractor-Free Rendering</title>
+
+  <link href="https://fonts.googleapis.com/css?family=Google+Sans|Noto+Sans|Castoro"
+        rel="stylesheet">
+
+  <link rel="stylesheet" href="./static/css/bulma.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-carousel.min.css">
+  <link rel="stylesheet" href="./static/css/bulma-slider.min.css">
+  <link rel="stylesheet" href="./static/css/fontawesome.all.min.css">
+  <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/jpswalsh/academicons@1/css/academicons.min.css">
+  <link rel="stylesheet" href="./static/css/index.css">
+  <!-- <link rel="icon" href="">  -->
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎈</text></svg>">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script defer src="./static/js/fontawesome.all.min.js"></script>
+  <script src="./static/js/bulma-carousel.min.js"></script>
+  <script src="./static/js/bulma-slider.min.js"></script>
+  <script src="./static/js/index.js"></script>
+  <link href="static/css/twentytwenty.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+
+<section class="hero">
+  <div class="hero-body">
+    <div class="container is-max-desktop">
+      <div class="columns is-centered">
+        <div class="column has-text-centered">
+          <h1 class="title is-1 publication-title">DeSplat: Decomposed Gaussian Splatting for Distractor-Free Rendering</h1>
+          <div class="is-size-5 publication-authors">
+            <span class="author-block">
+              <a href="https://johanna0626.github.io/">Yihao Wang</a><sup>1</sup>,</span>
+            <span class="author-block">
+              <a href="https://marcusklasson.github.io/">Marcus Klasson</a><sup>2</sup>,</span>
+            <span class="author-block">
+              <a href="https://maturk.github.io/">Matias Turkulainen</a><sup>2</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://ffrivera0.github.io/">Shuzhe Wang</a><sup>2</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://users.aalto.fi/~kannalj1/">Juho Kannala</a><sup>2,3</sup>,
+            </span>
+            <span class="author-block">
+              <a href="https://users.aalto.fi/~asolin/">Arno Solin</a><sup>2</sup>
+            </span>
+          </div>
+
+          <div class="is-size-5 publication-authors">
+            <span class="author-block"><sup>1</sup>Technical University of Munich,</span>
+            <span class="author-block"><sup>2</sup>Aalto University,</span>
+            <span class="author-block"><sup>3</sup>University of Oulu</span>
+          </div>
+
+          <div class="column has-text-centered">
+            <div class="publication-links">
+              <!-- PDF Link. -->
+              <span class="link-block">
+                <a href="https://arxiv.org/pdf/2011.12948"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fas fa-file-pdf"></i>
+                  </span>
+                  <span>Paper</span>
+                </a>
+              </span>
+              <span class="link-block">
+                <a href="https://arxiv.org/abs/2011.12948"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="ai ai-arxiv"></i>
+                  </span>
+                  <span>arXiv</span>
+                </a>
+              </span>
+              <!-- Video Link. -->
+              <!-- <span class="link-block">
+                <a href="https://www.youtube.com/watch?v=MrKrnHhk8IA"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-youtube"></i>
+                  </span>
+                  <span>Video</span>
+                </a>
+              </span> -->
+              <!-- Code Link. -->
+              <span class="link-block">
+                <a href="https://github.com/AaltoML/desplat/"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="fab fa-github"></i>
+                  </span>
+                  <span>Code</span>
+                  </a>
+              </span>
+              <!-- Dataset Link. -->
+              <!-- <span class="link-block">
+                <a href="https://github.com/google/nerfies/releases/tag/0.1"
+                   class="external-link button is-normal is-rounded is-dark">
+                  <span class="icon">
+                      <i class="far fa-images"></i>
+                  </span>
+                  <span>Data</span>
+                  </a> -->
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="margin-top: -50px;">
+    <div class="container is-max-desktop">
+      <!-- TLDR. -->
+      <div class="content" style="display: flex;">
+          <h2 class="title is-5" style="margin-right: 10px; white-space: nowrap; letter-spacing: -2px;">
+            <span style="color: red;">T</span>
+            <span style="color: blue;">L</span>
+            <span style="color: green;">D</span>
+            <span style="color: orange;">R</span>
+            <span style="color: black;">:</span>
+            </h2>
+          <div class="content has-text-justified">
+            <p>
+                <b>We model distractors and multi-view inconsistencies in captured frames with view-specific Gaussians in each camera view. We decompose alpha compositing and explicitly separate occluders and the underlying static 3D scene.</b>
+            </p>
+          </div>
+      </div>
+      <!--/ TLDR. -->
+    </div>
+  </section>
+
+<section class="teaser">
+  <div class="container is-max-desktop">
+    <div class="columns is-vcentered interpolation-panel">
+        <img src="asset/firstpage_desplat.png"\>
+    </div>
+  </div>
+</section>
+
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <!-- Abstract. -->
+    <div class="columns is-centered has-text-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Abstract</h2>
+        <div class="content has-text-justified">
+          <p>
+            Gaussian splatting enables fast novel view synthesis in static 3D environments. 
+            However, reconstructing real-world environments remains challenging as distractors or occluders break the multi-view consistency assumption required for accurate 3D reconstruction. 
+            Most existing methods rely on external semantic information from pre-trained models, introducing 
+            additional computational overhead as pre-processing steps or during optimization. 
+            In this work, we propose a novel method, <span class="dnerf">DeSplat</span>, that directly separates distractors and static scene elements purely based on volume rendering of Gaussian primitives. 
+            We initialize Gaussians within each camera view for reconstructing the view-specific distractors to separately model the static 3D scene and distractors in the alpha compositing stages. 
+            <span class="dnerf">DeSplat</span> yields an explicit scene separation of static elements and distractors, achieving comparable results to prior distractor-free approaches without sacrificing rendering speed.  
+            We demonstrate <span class="dnerf">DeSplat</span>'s effectiveness on three benchmark data sets for distractor-free novel view synthesis. 
+            
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="has-text-centered" >
+      <h2 class="title is-3">Pipeline</h2>
+      <div class="columns is-four-fifths">
+        <img src="asset/pipeline.png" style="width: 80%; height: auto;  margin: 0 auto;"\>
+      </div>
+        <p>We decompose 3DGS to model the static scene and per-view distractors explicitly.</p>
+    </div>
+  </div>
+</section>
+
+
+<section class="hero is-light is-small">
+  <div class="hero-body has-text-centered">
+    <h2 class="title is-3">Videos</h2>
+      <p>We visualize the spot, statue, and yoda scenes, highlighting the differences between ours and the Splatfacto.</p>
+    <div class="container is-max-desktop">
+      
+      <div style="height: 20px;"></div>
+        <!-- <div class="has-text-centered", > -->
+          <div class="item item-spot">
+            <video poster="" id="spot" autoplay controls muted loop playsinline width="60%">
+              <source src="./asset/videos/spot_comparison.mp4"
+                      type="video/mp4">
+            </video>
+          <!-- </div> -->
+        </div>
+        <!-- <div class="column is-3 has-text-centered"> -->
+          <div class="item item-statue">
+            <video poster="" id="statue" autoplay controls muted loop playsinline width="60%">
+              <source src="./asset/videos/statue_comparison.mp4"
+                      type="video/mp4">
+            </video>
+          <!-- </div> -->
+        </div>
+        <!-- <div class="column is-3 has-text-centered"> -->
+          <div class="item item-yoda">
+            <video poster="" id="yoda" autoplay controls muted loop playsinline width="60%">
+              <source src="./asset/videos/yoda_comparison.mp4"
+                      type="video/mp4">
+            </video>
+          <!-- </div> -->
+        </div>
+      </div>
+    </div>
+  <!-- </div> -->
+</section>
+
+<!--Visuals-->
+<section class="section">
+    <div class="container hero-body">
+        <div class="column has-text-centered">
+            <h2 class="title is-3">Qualitative Visuals</h2>
+        </div>
+        <!--RGB/Depths/Normals-->
+        <p><strong>Scene decomposition:</strong> We visualize the result of optimized distractor Gaussians, the static 3D scene, and the combined alpha-composited images.</p>
+        <div class="columns is-centered is-gapless">
+            <div class="column is-one-third has-text-centered">
+                <div class="twentytwenty-container twentytwenty-custom">
+                    <img src="asset/images/illustration/android/eval_img_dyn_0011.png" alt="Distractor Gaussians">
+                    <img src="asset/images/illustration/android/eval_rgb_static_0011.png" alt="Static scene">
+                    <img src="asset/images/illustration/android/eval_img_0011.png" alt="Combined">
+                </div>
+            </div>
+
+            <div class="column is-one-third has-text-centered">
+                <div class="twentytwenty-container twentytwenty-custom">
+                    <img src="asset/images/illustration/statue/eval_img_dyn_0064.png" alt="Distractor Gaussians">
+                    <img src="asset/images/illustration/statue/eval_rgb_static_0064.png" alt="Static scene">
+                    <img src="asset/images/illustration/statue/eval_img_0064.png" alt="Combined">
+                </div>
+            </div>
+
+            <div class="column is-one-third has-text-centered">
+                <div class="twentytwenty-container twentytwenty-custom">
+                    <img src="asset/images/illustration/patio_high/eval_img_dyn_0073.png" alt="Distractor Gaussians">
+                    <img src="asset/images/illustration/patio_high/eval_rgb_static_0073.png" alt="Static scene">
+                    <img src="asset/images/illustration/patio_high/eval_img_0073.png" alt="Combined">
+                </div>
+            </div>
+        </div>
+
+        <p><strong>Baseline comparisons:</strong> We visualize renderings compared to baseline methods.</p>
+        <!--SpotlessSplats-->
+        <div class="columns is-centered is-gapless">
+            <div class="column is-one-third has-text-centered">
+                <div class="twentytwenty-container twentytwenty-custom">
+                    <img src="asset/images/qualitative/proposal 2/statue/eval_img_0010-sf.png" alt="Splatfacto">
+                    <img src="asset/images/qualitative/proposal 2/statue/val_colors_0014.jpg" alt="SpotLessSplats">
+                    <img src="asset/images/qualitative/proposal 2/statue/eval_img_0010-ours.png" alt="Ours">
+                    <img src="asset/images/qualitative/proposal 2/statue/eval_img_0010-GT.png" alt="GT">
+                </div>
+            </div>
+
+            <div class="column is-one-third has-text-centered">
+                <div class="twentytwenty-container twentytwenty-custom">
+                    <img src="asset/images/qualitative/proposal 2/android/eval_img_0007_sf.png" alt="Splatfacto">
+                    <img src="asset/images/qualitative/spotlesssplats/android/val_colors_0017.jpg" alt="SpotlessSplats">
+                    <img src="asset/images/qualitative/proposal 2/android/eval_img_0007_ours.png" alt="Ours">
+                    <img src="asset/images/qualitative/proposal 2/android/eval_img_0007 -GT.png" alt="GT">
+                </div>
+            </div>
+
+            <div class="column is-one-third has-text-centered">
+                <div class="twentytwenty-container twentytwenty-custom">
+                    <img src="asset/images/qualitative/proposal 2/corner/corner-ours.png" alt="Splatfacto">
+                    <img src="asset/images/qualitative/spotlesssplats/corner/val_colors_0000.jpg" alt="SpotlessSplats">
+                    <img src="asset/images/qualitative/proposal 2/corner/corner-ours.png" alt="Ours">
+                    <img src="asset/images/qualitative/proposal 2/corner/corner-GT.png" alt="GT">
+                </div>
+            </div>
+        </div>
+        <!--Wild gaussians-->
+        <div class="columns is-centered is-gapless">
+            <div class="column is-one-third has-text-centered">
+                <div class="twentytwenty-container twentytwenty-custom">
+                    <img src="asset/images/qualitative/proposal 2/phototourism/brandenburg/eval_img_0006-sf.png" alt="Splatfacto">
+                    <img src="asset/images/qualitative/proposal 2/phototourism/brandenburg/WildGaussians_6.png" alt="WildGaussians">
+                    <img src="asset/images/qualitative/proposal 2/phototourism/brandenburg/render_6.jpg" alt="Ours">
+                    <img src="asset/images/qualitative/proposal 2/phototourism/brandenburg/88909760_6880126015.jpg" alt="GT">
+                </div>
+            </div>
+
+            <div class="column is-one-third has-text-centered">
+                <div class="twentytwenty-container twentytwenty-custom">
+                    <img src="asset/images/qualitative/proposal 2/phototourism/sacre/eval_img_0004_sf.png" alt="Splatfacto">
+                    <img src="asset/images/qualitative/proposal 2/phototourism/sacre/WildGaussians.png" alt="WildGaussians">
+                    <img src="asset/images/qualitative/proposal 2/phototourism/sacre/render_4_A.jpg" alt="Ours">
+                    <img src="asset/images/qualitative/proposal 2/phototourism/sacre/eval_img_0004_GT.png" alt="GT">
+                </div>
+            </div>
+
+            <div class="column is-one-third has-text-centered">
+                <div class="twentytwenty-container twentytwenty-custom">
+                    <img src="asset/images/qualitative/proposal 2/yoda/eval_img_0045-sf.png" alt="Splatfacto">
+                    <img src="asset/images/qualitative/proposal 2/yoda/val_0054.png" alt="SpotlessSplats">
+                    <img src="asset/images/qualitative/proposal 2/yoda/eval_img_0045-ours.png" alt="Ours">
+                    <img src="asset/images/qualitative/proposal 2/yoda/eval_img_0045-gt.png" alt="GT">
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns">
+    <!-- Concurrent Work. -->
+    <div class="columns">
+      <div class="column is-full-width">
+        <h2 class="title is-3">Related Links</h2>
+
+        <div class="content has-text-justified">
+          <p>
+            Check out some interesting works related to distractor-free Gaussian splatting: 
+            <ul>
+              <li> <a href="https://spotlesssplats.github.io/">SpotLessSplats: Ignoring Distractors in 3D Gaussian Splatting. </li>
+              <li> <a href="https://github.com/jkulhanek/wild-gaussians/">WildGaussians: 3D Gaussian Splatting in the Wild. </li>
+              <li> <a href="https://arxiv.org/abs/2403.10427">SWAG: Splatting in the Wild images with Appearance-conditioned Gaussians. </li>
+              <li> <a href="https://eastbeanzhang.github.io/GS-W/">Gaussian in the Wild: 3D Gaussian Splatting for Unconstrained Image Collections. </li>
+              <li> <a href="https://arxiv.org/abs/2406.10373">Wild-GS: Real-Time Novel View Synthesis from Unconstrained Photo Collections </li>   
+            </ul>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+<section class="section" id="BibTeX">
+  <div class="container is-max-desktop content">
+    <h2 class="title">BibTeX</h2>
+    <pre><code>@article{wang2024desplat,
+        title={{DeSplat}: {D}ecomposed {G}aussian Splatting for Distractor-Free Rendering}, 
+        author={Yihao Wang and Marcus Klasson and Matias Turkulainen and Shuzhe Wang and Juho Kannala and Arno Solin},
+        year={2024},
+        journal={arXiv preprint arxiv:XXXX.XXXX}
+      }</code></pre> 
+  </div>
+</section>
+
+
+<footer class="footer">
+  <div class="container">
+    <div class="content has-text-centered">
+      <a class="icon-link"
+         href="./static/videos/nerfies_paper.pdf">
+        <i class="fas fa-file-pdf"></i>
+      </a>
+      <a class="icon-link" href="https://github.com/keunhong" class="external-link" disabled>
+        <i class="fab fa-github"></i>
+      </a>
+    </div>
+    <div class="columns is-centered">
+      <div class="column is-8">
+        <div class="content">
+          <p>
+            This website is licensed under a <a rel="license"
+                                                href="http://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a> 
+            and is based on the <a
+            href="https://github.com/nerfies/nerfies.github.io">Nerfies</a> website. 
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- Bootstrap core JavaScript -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+<script src="static/css/bootstrap.min.js"></script>
+<!-- <script src="/js/offcanvas.js"></script> -->
+<script src="static/css/jquery.event.move.js"></script>
+<script src="static/css/jquery.twentytwenty.js"></script>
+
+<script>
+    $(window).load(function () { $(".twentytwenty-container").twentytwenty({ default_offset_pct: 0.5 }); });
+</script>
+
+</body>
+</html>
