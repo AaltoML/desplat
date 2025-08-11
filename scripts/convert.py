@@ -64,7 +64,7 @@ if not args.skip_matching:
         --ImageReader.camera_model "
         + args.camera
         + " \
-        --SiftExtraction.use_gpu "
+        --FeatureExtraction.use_gpu "
         + str(use_gpu)
     )
     exit_code = os.system(feat_extracton_cmd)
@@ -79,7 +79,7 @@ if not args.skip_matching:
         --database_path "
         + args.source_path
         + "/distorted/database.db \
-        --SiftMatching.use_gpu "
+        --FeatureMatching.use_gpu "
         + str(use_gpu)
     )
     exit_code = os.system(feat_matching_cmd)

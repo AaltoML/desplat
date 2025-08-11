@@ -36,6 +36,11 @@ conda create --name desplat -y python=3.8
 conda activate desplat
 pip install torch==2.1.2+cu118 torchvision==0.16.2+cu118 --extra-index-url https://download.pytorch.org/whl/cu118
 conda install -c "nvidia/label/cuda-11.8.0" cuda-toolkit
+
+# Optional: install COLMAP
+conda install conda-forge::colmap
+# Optional: install ImageMagick for image resizing
+conda install -c conda-forge imagemagick
 ```
 
 Install DeSplat:
@@ -70,17 +75,13 @@ To download the undistorted and down-sampled on-the-go dataset, you can either a
 bash scripts/download_on-the-go_processing.sh
 ```
 This Bash script automatically downloads the data, processes it using COLMAP, and downsamples the images. For downsampling, you may need to install ImageMagick.
-```
-# install ImageMagick if there is not on your computer:
-conda install -c conda-forge imagemagick
-# install COLMAP if there is not on your computer:
-conda install conda-forge::colmap
-```
+
 > **Note**: The initial On-the-go dataset does not include COLMAP points, so preprocessing is required. For detailed preprocessing steps, please refer to the instructions below.
 
 <details close>
 <summary>Custom data</summary>
-    We support COLMAP based datasets. Ensure your dataset is organized in the following structure:
+We support COLMAP based datasets. Ensure your dataset is organized in the following structure before training:
+
 ```
 <location>
 |---images
@@ -105,12 +106,7 @@ To prepare the images for the COLMAP processor, organize your dataset folder as 
 ```
 Then, run the following command:
 ```
-# install COLMAP if there is not on your computer:
-conda install conda-forge::colmap
 python scripts/convert.py -s <location> [--resize] # If not resizing, ImageMagick is not needed
-
-# an example for on-the-go dataset could be:
-python scripts/convert.py -s ../data/on-the-go/patio
 ```
 
 </details>
@@ -122,7 +118,7 @@ For RobustNeRF data, train using:
 ns-train desplat robustnerf-data --data [path_to_robustnerf_data] 
 ```
 
-For RobustNeRF data, train using:
+For On-the-go data, train using:
 ```
 ns-train desplat onthego-data --data [path_to_onthego_data] 
 ```
@@ -181,17 +177,25 @@ To temporarily resolve this issue, my solution is to comment out the following t
 "schedulers": {k: v.state_dict() for (k, v) in self.optimizers.schedulers.items()},
 ```          
 
+## Evaluation and Rendering
+To evaluate our results, we run the following command:
 
-## Rendering
+```
+ns-eval --load-config <PATH TO CONFIG> --output-path <OUTPUT PATH> --render-output-path <RENDER PATH>
+```
 
-To render a video, we need to use `ns-render`. The simple command is:
+To render the RGB images, depth images, or videos, we use `ns-render`. Some simple examples are:
 ```
-ns-render camera-path/interpolate/spiral/dataset --load-config .../config.yml
+ns-render camera-path/interpolate/spiral/dataset --load-config <PATH TO CONFIG>
+ns-render dataset --split train+test --load-config <PATH TO CONFIG>  --output-path <RENDER PATH>  # render the images of the whole dataset for visualization
 ```
-To render the images of the whole dataset for visualization, use the following command:
-```
-ns-render dataset --split train+test --load-config <PATH TO CONFIG>  --output-path <PATH TO SAVE IMGS>
-```
+
+`<PATH TO CONFIG>` is the path to the `config.yml` saved in the project folder.  
+`<OUTPUT PATH>` is a file ending with `.json` where the evaluation results (PSNR, SSIM, LPIPS, FPS, etc.) will be saved.  
+`<RENDER PATH>` is the folder where you want to save the rendered images.
+
+For more detailed usage, please refer to the [NerfStudio](http://www.nerf.studio/) code and documentation.
+
 
 ## Test-Time Optimization (TTO)
 
