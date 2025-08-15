@@ -223,4 +223,4 @@ Adding the `--use_saved_embedding` flag loads the saved appearance embeddings.
 ```
 
 ## License
-This software is provided under the Apache License 2.0. See the accompanying LICENSE file for details.
+This software is provided under the MIT License. See the accompanying [LICENSE](LICENSE) file for details.
